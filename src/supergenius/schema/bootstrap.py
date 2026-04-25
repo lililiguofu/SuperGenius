@@ -1,4 +1,4 @@
-"""程序化在飞书多维表格里创建 jobs / resumes / events 三张表。
+"""在飞书多维表格中按 `ALL_TABLES` 创建/补齐表与字段（jobs、resumes、events、interviews 等）。
 
 幂等：已存在的表直接复用；已存在的字段跳过。只补不删。
 结束后把 table_id 写回缓存文件（.supergenius/tables.json），运行时读取。
@@ -42,13 +42,13 @@ def ensure_table(bitable: BitableClient, spec: TableSpec) -> str:
             if e.code == 91403:
                 raise RuntimeError(
                     "create_table 返回 91403 Forbidden：应用无「API 新建数据表」权限。\n"
-                    "请给 Base 协作者/可管理，或手动建表 jobs、resumes、events 后重跑。"
+                    "请给 Base 协作者/可管理，或按 schema 手动建表后重跑（只补字段）。"
                 ) from e
             if e.code == 1254302:
                 raise RuntimeError(
                     "create_table 返回 1254302：多为高级权限下应用无建表角色。\n"
                     "请「…」→「添加文档应用」给应用「可管理」；"
-                    "或手动建三表 jobs、resumes、events 后重跑（只补字段）。"
+                    "或按 ALL_TABLES 手动建表后重跑（只补字段）。"
                 ) from e
             raise
 

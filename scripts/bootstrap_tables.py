@@ -1,4 +1,4 @@
-"""一键在飞书多维表格里创建 jobs / resumes / events 三张表并登记 table_id。"""
+"""在飞书 Base 中按 `ALL_TABLES` 创建/补全表与字段，并登记 table_id。"""
 
 from __future__ import annotations
 

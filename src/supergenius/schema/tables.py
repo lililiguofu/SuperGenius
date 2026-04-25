@@ -1,11 +1,6 @@
-"""MVP 阶段三张飞书多维表格的结构定义。
+"""飞书多维表格结构定义：岗位、简历、事件，及阶段三/四/五扩展表。
 
-- jobs：岗位，从 draft → jd_drafting → jd_pending_approval → open
-- resumes：简历，从 new → screening → screened
-- events：全局审计（所有 Agent 的读写事件）
-
-字段类型常量参考飞书多维表格文档：
-https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/server-docs/docs/bitable-v1/app-table-field/field-description
+字段类型常量见飞书文档。
 """
 
 from __future__ import annotations
@@ -47,6 +42,53 @@ class ResumeDecision(str, Enum):
     REJECT = "reject"
 
 
+class PipelineStage(str, Enum):
+    """简历在初筛之后的前进阶段（仅与 decision/status 配合使用）。"""
+
+    EMPTY = ""
+    INTERVIEW_QUEUED = "interview_queued"
+    INTERVIEWS_IN_PROGRESS = "interviews_in_progress"
+    DEBATE = "debate"
+    HM_ARBITRATION = "hm_arbitration"
+    OFFER_DRAFTING = "offer_drafting"
+    OFFER_SENT = "offer_sent"
+    CLOSED = "closed"
+    HOLD_REVIEW = "hold_review"
+
+
+class InterviewRole(str, Enum):
+    TECH = "tech"
+    BUSINESS = "business"
+    CULTURE = "culture"
+
+
+class InterviewRowStatus(str, Enum):
+    PENDING = "pending"
+    IN_PROGRESS = "in_progress"
+    DONE = "done"
+
+
+class DebateStatus(str, Enum):
+    OPEN = "open"
+    CLOSED = "closed"
+
+
+class OfferStatus(str, Enum):
+    DRAFT = "draft"
+    PENDING_APPROVAL = "pending_approval"
+    SENT = "sent"
+    NEGOTIATE = "negotiate"
+    ACCEPTED = "accepted"
+    REJECTED = "rejected"
+    NO_SHOW = "no_show"
+
+
+class ReportKind(str, Enum):
+    WEEKLY = "weekly"
+    JD_HEALTH = "jd_health"
+    FUNNEL = "funnel"
+
+
 class EventAction(str, Enum):
     CLAIM = "claim"
     UPDATE = "update"
@@ -58,6 +100,16 @@ AGENT_NONE = ""
 AGENT_HM = "hiring_manager"
 AGENT_JD = "jd_strategist"
 AGENT_SCREENER = "screener"
+AGENT_INTERVIEW_FANOUT = "interview_fanout"
+AGENT_TECH = "tech_interviewer"
+AGENT_BUSINESS = "business_interviewer"
+AGENT_CULTURE = "culture_interviewer"
+AGENT_POST_INTERVIEW = "post_interview"
+AGENT_DEBATE = "debate"
+AGENT_HM_ARB = "hiring_manager_arbiter"
+AGENT_OFFER = "offer_manager"
+AGENT_CANDIDATE = "candidate"
+AGENT_ANALYST = "analyst"
 
 
 @dataclass
@@ -81,9 +133,6 @@ class TableSpec:
 
 
 # ---------- jobs ----------
-# 注：飞书多维表格每张表必须有一个"主字段"；创建表时默认首字段为文本，
-# 名字沿用 ReqTable 默认即可；我们把 job_id 作为主字段（Text）。
-
 JOBS_TABLE = TableSpec(
     name="jobs",
     primary_field="job_id",
@@ -100,6 +149,8 @@ JOBS_TABLE = TableSpec(
         FieldDef("status", FieldType.TEXT),
         FieldDef("owner_agent", FieldType.TEXT),
         FieldDef("updated_at", FieldType.TEXT),
+        # 分析师可写入的轻量回写
+        FieldDef("jd_suggestion", FieldType.TEXT),
     ],
 )
 
@@ -119,6 +170,12 @@ RESUMES_TABLE = TableSpec(
         FieldDef("status", FieldType.TEXT),
         FieldDef("owner_agent", FieldType.TEXT),
         FieldDef("updated_at", FieldType.TEXT),
+        FieldDef("pipeline_stage", FieldType.TEXT),
+        FieldDef("interview_bundle_id", FieldType.TEXT),
+        FieldDef("debate_round", FieldType.TEXT),
+        FieldDef("hm_decision", FieldType.TEXT),
+        FieldDef("hm_reason", FieldType.TEXT),
+        FieldDef("analyst_note", FieldType.TEXT),
     ],
 )
 
@@ -137,11 +194,78 @@ EVENTS_TABLE = TableSpec(
     ],
 )
 
+# ---------- interviews ----------
+INTERVIEWS_TABLE = TableSpec(
+    name="interviews",
+    primary_field="interview_id",
+    fields=[
+        FieldDef("interview_id", FieldType.TEXT),
+        FieldDef("resume_id", FieldType.TEXT),
+        FieldDef("job_id", FieldType.TEXT),
+        FieldDef("role", FieldType.TEXT),
+        FieldDef("status", FieldType.TEXT),
+        FieldDef("total_score", FieldType.NUMBER),
+        FieldDef("dimension_json", FieldType.TEXT),
+        FieldDef("notes", FieldType.TEXT),
+        FieldDef("quote_snippet", FieldType.TEXT),
+        FieldDef("owner_agent", FieldType.TEXT),
+        FieldDef("updated_at", FieldType.TEXT),
+    ],
+)
 
-ALL_TABLES: list[TableSpec] = [JOBS_TABLE, RESUMES_TABLE, EVENTS_TABLE]
+# ---------- debates（一轮一行；speaker 为面试官 agent 名或 hiring_manager_arbiter）----------
+DEBATES_TABLE = TableSpec(
+    name="debates",
+    primary_field="debate_id",
+    fields=[
+        FieldDef("debate_id", FieldType.TEXT),
+        FieldDef("resume_id", FieldType.TEXT),
+        FieldDef("round", FieldType.NUMBER),
+        FieldDef("speaker_agent", FieldType.TEXT),
+        FieldDef("statement", FieldType.TEXT),
+        FieldDef("status", FieldType.TEXT),
+        FieldDef("ts", FieldType.TEXT),
+    ],
+)
 
-# TODO(v2): 面试/辩论/Offer 表在进入阶段三/四时补：
-# - interviews(interview_id, resume_id, interviewer_agent, dimension_scores, notes, status)
-# - debates(debate_id, resume_id, round, speaker_agent, statement, ts)
-# - offers(offer_id, resume_id, salary, status, response_at, ...)
-# - reports(report_id, period, kind, content, ts)
+# ---------- offers ----------
+OFFERS_TABLE = TableSpec(
+    name="offers",
+    primary_field="offer_id",
+    fields=[
+        FieldDef("offer_id", FieldType.TEXT),
+        FieldDef("resume_id", FieldType.TEXT),
+        FieldDef("job_id", FieldType.TEXT),
+        FieldDef("salary_offer", FieldType.NUMBER),
+        FieldDef("status", FieldType.TEXT),
+        FieldDef("hm_notes", FieldType.TEXT),
+        FieldDef("candidate_message", FieldType.TEXT),
+        FieldDef("owner_agent", FieldType.TEXT),
+        FieldDef("updated_at", FieldType.TEXT),
+    ],
+)
+
+# ---------- reports ----------
+REPORTS_TABLE = TableSpec(
+    name="reports",
+    primary_field="report_id",
+    fields=[
+        FieldDef("report_id", FieldType.TEXT),
+        FieldDef("period", FieldType.TEXT),
+        FieldDef("kind", FieldType.TEXT),
+        FieldDef("content", FieldType.TEXT),
+        FieldDef("target_job_id", FieldType.TEXT),
+        FieldDef("ts", FieldType.TEXT),
+    ],
+)
+
+
+ALL_TABLES: list[TableSpec] = [
+    JOBS_TABLE,
+    RESUMES_TABLE,
+    EVENTS_TABLE,
+    INTERVIEWS_TABLE,
+    DEBATES_TABLE,
+    OFFERS_TABLE,
+    REPORTS_TABLE,
+]

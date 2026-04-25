@@ -50,6 +50,7 @@ def main() -> None:
         "status": JobStatus.DRAFT.value,
         "owner_agent": "",
         "updated_at": utc_now_iso(),
+        "jd_suggestion": "",
     }
     rid = ctx.bitable.create_record(jobs_tid, record)
     logger.info(f"写入岗位 draft record_id={rid} job_id={job_id}")

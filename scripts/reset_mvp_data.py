@@ -1,4 +1,4 @@
-"""清空 jobs / resumes / events 全表记录，便于整条 MVP 从头上演示。
+"""清空多维表格中各业务表记录，便于整条链路从头上演示。
 
 不删表结构；与 bootstrap_tables 配合：先本脚本，再 seed_jobs + candidate_emitter，最后 run_mvp。
 """
@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from loguru import logger  # noqa: E402
 
+from supergenius.schema.tables import ALL_TABLES  # noqa: E402
 from supergenius.runtime import boot  # noqa: E402
 
 
@@ -31,7 +32,12 @@ def _wipe_table(ctx, table_key: str, page_size: int = 500) -> int:
 
 def main() -> None:
     _, ctx = boot()
-    for name in ("resumes", "jobs", "events"):
+    # 先子表、后主表，避免未来若有引用时顺序更合理
+    order = [t.name for t in ALL_TABLES]
+    for name in order:
+        if name not in ctx.table_ids:
+            logger.warning(f"[reset] 跳过未缓存的表 {name}")
+            continue
         n = _wipe_table(ctx, name)
         logger.info(f"[reset] 已删除 {name} 表 {n} 行")
     logger.info("[reset] 完成。接下来可执行 seed_jobs -> candidate_emitter -> run_mvp.py")

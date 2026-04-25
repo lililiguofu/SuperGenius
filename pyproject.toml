@@ -1,7 +1,7 @@
 [project]
 name = "supergenius"
 version = "0.1.0"
-description = "基于飞书多维表格的多智能体虚拟招聘组织 (MVP: 立项+JD+初筛)"
+description = "基于飞书多维表格的多智能体虚拟招聘组织（全链路: JD+初筛+面试+辩论+Offer+分析）"
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [{ name = "SuperGenius" }]
@@ -30,6 +30,7 @@ sg-bootstrap = "supergenius.cli:bootstrap_tables"
 sg-seed = "supergenius.cli:seed_jobs"
 sg-emit = "supergenius.cli:candidate_emitter"
 sg-run = "supergenius.cli:run_mvp"
+sg-jd = "supergenius.cli:generate_jd"
 
 [build-system]
 requires = ["hatchling"]

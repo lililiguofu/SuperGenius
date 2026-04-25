@@ -12,7 +12,8 @@ from supergenius.agents.base import AgentBase, ClaimedRecord
 from supergenius.feishu.bitable import Record
 from supergenius.feishu.field_value import feishu_text_to_str
 from supergenius.llm.client import render_prompt
-from supergenius.schema.tables import (  # noqa: F401  (ResumeDecision used in _patch)
+from supergenius.schema.tables import (  # noqa: F401
+    PipelineStage,
     ResumeDecision,
     ResumeStatus,
 )
@@ -180,6 +181,7 @@ class ScreenerAgent(AgentBase):
             "parsed_skills": "[]",
             "status": ResumeStatus.NEW.value,
             "owner_agent": "",
+            "pipeline_stage": "",
         }
 
     def _patch(
@@ -189,6 +191,12 @@ class ScreenerAgent(AgentBase):
         skills: list[str],
         reason: str,
     ) -> dict[str, Any]:
+        if decision is ResumeDecision.PASS_:
+            pstage = PipelineStage.INTERVIEW_QUEUED.value
+        elif decision is ResumeDecision.HOLD:
+            pstage = PipelineStage.HOLD_REVIEW.value
+        else:
+            pstage = PipelineStage.CLOSED.value
         return {
             "score": score,
             "decision": decision.value,
@@ -196,9 +204,16 @@ class ScreenerAgent(AgentBase):
             "parsed_skills": json.dumps(skills, ensure_ascii=False),
             "status": ResumeStatus.SCREENED.value,
             "owner_agent": "",
+            "pipeline_stage": pstage,
         }
 
     def _patch_raw(self, decision_str: str, result: dict[str, Any]) -> dict[str, Any]:
+        if decision_str == "pass":
+            pstage = PipelineStage.INTERVIEW_QUEUED.value
+        elif decision_str == "hold":
+            pstage = PipelineStage.HOLD_REVIEW.value
+        else:
+            pstage = PipelineStage.CLOSED.value
         return {
             "score": int(result.get("score") or 0),
             "decision": decision_str,
@@ -206,7 +221,8 @@ class ScreenerAgent(AgentBase):
             "parsed_skills": json.dumps(result.get("parsed_skills") or [], ensure_ascii=False),
             "status": ResumeStatus.SCREENED.value,
             "owner_agent": "",
+            "pipeline_stage": pstage,
         }
 
     def _patch_reject(self, reason: str) -> dict[str, Any]:
-        return self._patch(ResumeDecision.REJECT, 0, [], reason)
+        return self._patch(ResumeDecision.REJECT, 0, [], reason)  # sets pipeline closed

@@ -130,11 +130,26 @@ def agent_ctx(mem_bitable) -> AgentContext:
 
     cfg = MagicMock()
     cfg.scheduler.screener_var_threshold = 100.0
+    cfg.scheduler.interview_spread_threshold = 3.0
+    cfg.scheduler.debate_max_rounds = 3
     cfg.llm.temperature = 0.3
+
+    interviews = mem_bitable.add_table("interviews")
+    debates = mem_bitable.add_table("debates")
+    offers = mem_bitable.add_table("offers")
+    reports = mem_bitable.add_table("reports")
 
     return AgentContext(
         bitable=mem_bitable,  # type: ignore[arg-type]
-        table_ids={"jobs": jobs_tid, "resumes": resumes_tid, "events": events_tid},
+        table_ids={
+            "jobs": jobs_tid,
+            "resumes": resumes_tid,
+            "events": events_tid,
+            "interviews": interviews,
+            "debates": debates,
+            "offers": offers,
+            "reports": reports,
+        },
         llm=StubLLM([]),
         config=cfg,
         dry_run=False,

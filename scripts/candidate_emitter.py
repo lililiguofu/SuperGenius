@@ -52,6 +52,12 @@ def main() -> None:
                 "status": ResumeStatus.NEW.value,
                 "owner_agent": "",
                 "updated_at": utc_now_iso(),
+                "pipeline_stage": "",
+                "interview_bundle_id": "",
+                "debate_round": "0",
+                "hm_decision": "",
+                "hm_reason": "",
+                "analyst_note": "",
             }
         )
 

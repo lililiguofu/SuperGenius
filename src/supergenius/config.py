@@ -65,6 +65,8 @@ class LLMConfig:
 class SchedulerConfig:
     tick_seconds: float
     screener_var_threshold: float
+    interview_spread_threshold: float
+    debate_max_rounds: int
 
 
 @dataclass(frozen=True)
@@ -95,6 +97,8 @@ def load_settings() -> Settings:
         scheduler=SchedulerConfig(
             tick_seconds=float(_opt("SCHEDULER_TICK_SECONDS", "5")),
             screener_var_threshold=float(_opt("SCREENER_CONSISTENCY_VAR_THRESHOLD", "100")),
+            interview_spread_threshold=float(_opt("INTERVIEW_SPREAD_THRESHOLD", "3")),
+            debate_max_rounds=int(_opt("DEBATE_MAX_ROUNDS", "3")),
         ),
         log_level=_opt("LOG_LEVEL", "INFO"),
     )
