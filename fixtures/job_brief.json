@@ -1,0 +1,10 @@
+{
+  "job_id": "JOB-2026-001",
+  "title": "后端工程师（Python 方向）",
+  "level": "P5",
+  "headcount": 1,
+  "budget_min": 25000,
+  "budget_max": 40000,
+  "urgency": "P1-急招",
+  "jd_brief": "我们正在为 SuperGenius 虚拟招聘平台扩充后端团队，需要一位能独立拿下从需求到上线的 Python 工程师。工作重心：(1) 基于 FastAPI/Django 搭后端服务；(2) 和飞书/钉钉 OpenAPI 深度集成；(3) 用 LangGraph 等框架编排多 Agent 工作流。要求：3-5 年 Python 开发经验；有过线上服务的稳定性/可观测性实战；熟悉一个主流 LLM 框架。加分：开源项目贡献、写过技术博客。"
+}

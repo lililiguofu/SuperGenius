@@ -1,0 +1,23 @@
+姓名：刘岚
+年龄：27
+学历：北京邮电大学 软件工程 硕士
+
+工作经历
+2023.07 - 至今  某中厂 后端工程师
+- 负责用户增长相关的 FastAPI 服务，QPS 峰值 3000
+- 用 LangChain 做过一个内部知识库问答，上线半年，日均 500 次调用
+- 和企微开放平台对接做过 SSO 和消息推送
+
+2021.09 - 2023.06  某大厂 后端开发实习 → 校招正式
+- 参与内容推荐系统的 Python 服务开发
+- 用 Celery + Redis 做异步任务调度
+
+技能
+- Python 3.5 年，熟 FastAPI / asyncio
+- 用过 LangChain（生产环境），LangGraph 刚开始学
+- PostgreSQL / Redis / Kafka 基础扎实
+- 熟 Grafana + Prometheus 做监控
+
+加分
+- 有一个小开源项目 langchain-feishu-adapter，约 200 star
+- 公司内部技术分享做过 3 次

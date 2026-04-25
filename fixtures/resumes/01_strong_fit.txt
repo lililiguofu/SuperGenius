@@ -1,0 +1,25 @@
+姓名：林致远
+年龄：28
+学历：清华大学 计算机科学与技术 本科
+期望城市：北京/远程
+
+工作经历
+2022.03 - 至今  某出海 SaaS 公司 高级后端工程师 (Python)
+- 主导从 0 到 1 搭建了基于 FastAPI + PostgreSQL 的订单/计费中台，当前承载 50 万日活
+- 和 Stripe/Adyen/飞书开放平台深度集成，维护 30+ 个 OpenAPI 适配器
+- 引入 LangGraph 做客服工单自动分诊，P95 响应时间从 12s 降到 3s
+- 沉淀了一套基于 OpenTelemetry 的可观测性方案（trace+log+metric 联动）
+
+2019.07 - 2022.02  某大厂 后端工程师
+- 负责订单履约系统，Python + Django，日均调用量 2亿
+- 主导一次异步化改造，吞吐量提升 3x
+
+技能
+- Python 5年，熟 asyncio / FastAPI / Django / SQLAlchemy / Celery
+- 熟 PostgreSQL, Redis, Kafka；了解 ClickHouse
+- 用过 LangChain / LangGraph / LlamaIndex
+- 会写技术博客（个人博客 2k star）
+
+加分
+- GitHub: https://github.com/linzhiyuan (开源项目 feishu-py-sdk 1.2k star)
+- 技术博客 zhiyuan.blog 有 40+ 篇长文

@@ -1,0 +1,26 @@
+姓名：张大牛
+年龄：32
+
+工作经历
+2025.10 - 2026.01  某 AI 公司 后端工程师
+2025.04 - 2025.09  某创业公司 Python 高级工程师
+2024.09 - 2025.03  某互联网公司 技术专家
+2024.01 - 2024.08  另一家创业公司 架构师
+2023.05 - 2023.12  某 SaaS 公司 后端 Lead
+2022.06 - 2023.04  (空窗期)
+2021.01 - 2022.05  某外包公司 Python 开发
+
+技能
+- Python "十年经验"（实际工作经验仅 5 年）
+- 精通 FastAPI / Django / Flask / Tornado / aiohttp / Sanic
+- 精通所有主流大模型框架（LangChain/LangGraph/AutoGen/CrewAI/LlamaIndex）
+- 精通 K8s / Docker / Terraform / Ansible
+- 精通 Kafka / Pulsar / RabbitMQ / RocketMQ
+- 精通 PostgreSQL / MySQL / MongoDB / Redis / ClickHouse / TiDB
+
+项目
+- "主导了多个亿级日活的大型系统"（未写具体哪家公司、哪个系统、你负责哪部分）
+- "提升了10倍的性能"（未写基线、优化前后数据）
+
+自述
+期望年薪 150 万，接受远程。

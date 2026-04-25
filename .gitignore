@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+*.egg
+dist/
+build/
+
+# 虚拟环境
+.venv/
+venv/
+env/
+.env
+
+# 工具缓存
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# 本地多维表格 table_id 映射（每人跑 bootstrap 后生成）
+.supergenius/
+
+# 运行产物 / 临时文件
+._run_out.txt
+_last_run.txt
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

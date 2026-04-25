@@ -1,0 +1,52 @@
+[project]
+name = "supergenius"
+version = "0.1.0"
+description = "基于飞书多维表格的多智能体虚拟招聘组织 (MVP: 立项+JD+初筛)"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "SuperGenius" }]
+dependencies = [
+    "lark-oapi>=1.4.0",
+    "langgraph>=0.2.0",
+    "langchain-core>=0.3.0",
+    "openai>=1.40.0",
+    "pydantic>=2.6.0",
+    "python-dotenv>=1.0.0",
+    "loguru>=0.7.2",
+    "tenacity>=8.2.0",
+    "httpx>=0.27.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-mock>=3.12.0",
+    "ruff>=0.4.0",
+]
+
+[project.scripts]
+sg-bootstrap = "supergenius.cli:bootstrap_tables"
+sg-seed = "supergenius.cli:seed_jobs"
+sg-emit = "supergenius.cli:candidate_emitter"
+sg-run = "supergenius.cli:run_mvp"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/supergenius"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["E501"]
