@@ -1,0 +1,27 @@
+姓名：张明
+手机：13800138001
+邮箱：zhangming@example.com
+
+【求职意向】Python 后端工程师 / 全栈
+
+【教育背景】
+2014–2018  某985大学  计算机科学与技术  本科
+
+【工作经历】
+2018.07 – 至今  某互联网电商公司  高级后端开发工程师
+- 使用 Python 3.10+、Django/DRF、FastAPI 建设订单与营销服务，QPS 峰值 8k+，P99 延迟 <120ms。
+- 微服务改造：将单体拆为 20+ 服务，K8s + gRPC/HTTP，使用 Celery 处理异步任务与对账。
+- 数据库：MySQL 分库分表、读写分离、慢 SQL 与索引优化；Redis 作缓存、分布式锁、限流。
+- 可观测性：Prometheus + Grafana 告警，ELK 日志检索，参与线上 On-call。
+
+2016–2018  实习  Python 与运维自动化脚本。
+
+【技能】
+Python、Django/DRF、FastAPI、MySQL、Redis、RabbitMQ、K8s、Docker、Git、gRPC、REST
+熟悉 Linux、CI/CD、单元测试与接口文档。
+
+【项目亮点】
+设计并实现促销规则引擎，支持万级券并发与幂等；与支付、库存域协作保证一致性。
+
+【自我评价】
+注重代码规范与可维护性，5 年+ Python 后端经验，能独立负责服务从设计到上线。

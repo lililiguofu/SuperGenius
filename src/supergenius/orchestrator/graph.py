@@ -18,7 +18,9 @@ from supergenius.agents import (
     HiringManagerArbiterAgent,
     InterviewFanoutAgent,
     JDStrategistAgent,
+    OfferCounterAgent,
     OfferManagerAgent,
+    PoolReactivatorAgent,
     PostInterviewAgent,
     ScreenerAgent,
     TechInterviewerAgent,
@@ -48,6 +50,7 @@ def build_graph(ctx: AgentContext) -> Any:
         JDStrategistAgent(ctx),
         HiringManagerAgent(ctx),
         ScreenerAgent(ctx),
+        PoolReactivatorAgent(ctx),
         InterviewFanoutAgent(ctx),
         TechInterviewerAgent(ctx),
         BusinessInterviewerAgent(ctx),
@@ -57,6 +60,7 @@ def build_graph(ctx: AgentContext) -> Any:
         HiringManagerArbiterAgent(ctx),
         OfferManagerAgent(ctx),
         CandidateSimulatorAgent(ctx),
+        OfferCounterAgent(ctx),
         AnalystAgent(ctx),
     ]
     g = StateGraph(TickState)

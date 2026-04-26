@@ -132,6 +132,11 @@ def agent_ctx(mem_bitable) -> AgentContext:
     cfg.scheduler.screener_var_threshold = 100.0
     cfg.scheduler.interview_spread_threshold = 3.0
     cfg.scheduler.debate_max_rounds = 3
+    cfg.scheduler.reactivation_max_per_tick = 2
+    cfg.report_webhook_url = ""
+    cfg.fairness_counterfactual_enabled = True
+    cfg.bot_notify_pipeline_steps = True
+    cfg.feishu_bot_watcher_interval = 8.0
     cfg.llm.temperature = 0.3
 
     interviews = mem_bitable.add_table("interviews")

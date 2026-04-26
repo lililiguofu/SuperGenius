@@ -34,6 +34,17 @@ _DEBATE_STATEMENT = {
     },
 }
 
+_CONV = {
+    "name": "debate_converge",
+    "strict": True,
+    "schema": {
+        "type": "object",
+        "properties": {"converged": {"type": "boolean"}},
+        "required": ["converged"],
+        "additionalProperties": False,
+    },
+}
+
 
 def _load_interview_scores(
     bitable: Any, table_ids: dict[str, str], resume_id: str
@@ -112,6 +123,7 @@ class DebateAgent(AgentBase):
             resume_id = feishu_text_to_str(r.fields.get("resume_id")) or r.record_id
             summary = _load_interview_scores(self.ctx.bitable, self.ctx.table_ids, resume_id)
             rnd = dr + 1
+            st_lines: list[str] = []
             for spk in speakers:
                 user = render_prompt(
                     "debate_round",
@@ -119,6 +131,7 @@ class DebateAgent(AgentBase):
                     interview_summary=summary,
                     speaker=spk,
                 )
+                out: dict[str, Any] | None = None
                 try:
                     out = self.ctx.llm.chat(
                         system="You are a debate participant. Be concise, professional, in Chinese.",
@@ -128,8 +141,8 @@ class DebateAgent(AgentBase):
                     )
                 except Exception as e:
                     logger.exception(f"[{self.name}] 辩论 LLM 失败: {e}")
-                    continue
                 st = (out or {}).get("statement", "") if isinstance(out, dict) else ""
+                st_lines.append(f"{spk}：{st or ''}"[:2000])
                 self.ctx.bitable.create_record(
                     deb_tid,
                     {
@@ -142,6 +155,36 @@ class DebateAgent(AgentBase):
                         "ts": utc_now_iso(),
                     },
                 )
+            stm_text = "\n\n".join(st_lines)
+            converged = False
+            try:
+                conv = self.ctx.llm.chat(
+                    system="You judge whether the debate can end early. JSON only.",
+                    user=render_prompt(
+                        "debate_convergence",
+                        round_number=str(rnd),
+                        interview_json=summary,
+                        statements_text=stm_text,
+                    ),
+                    json_schema=_CONV,
+                )
+                if isinstance(conv, dict) and conv.get("converged") is True:
+                    converged = True
+            except Exception as e:
+                logger.debug(f"[{self.name}] 收敛检查跳过: {e}")
+            if converged:
+                self.ctx.bitable.update_record(
+                    tid,
+                    r.record_id,
+                    {
+                        "pipeline_stage": PipelineStage.HM_ARBITRATION.value,
+                        "debate_round": str(dr + 1),
+                        "updated_at": utc_now_iso(),
+                    },
+                )
+                logger.info(f"[{self.name}] 简历 {resume_id} 辩论第 {rnd} 轮后判定收敛，交经理")
+                processed += 1
+                continue
             new_dr = dr + 1
             patch: dict[str, Any] = {
                 "debate_round": str(new_dr),

@@ -84,3 +84,28 @@ def test_screener_hold_on_high_variance(agent_ctx):
     rec = agent_ctx.bitable.get_record(resumes_tid, rid)
     assert rec.fields["decision"] == ResumeDecision.HOLD.value
     assert rec.fields["pipeline_stage"] == PipelineStage.HOLD_REVIEW.value
+
+
+def test_screener_reject_goes_talent_pool(agent_ctx):
+    rej = {**_SCREEN, "decision": "reject", "reason": "nope"}
+    agent_ctx.llm = StubLLM([rej, rej])
+
+    jobs_tid = agent_ctx.table_ids["jobs"]
+    agent_ctx.bitable.create_record(
+        jobs_tid, {"job_id": "J1", "jd_text": "需要 Python", "status": JobStatus.OPEN.value}
+    )
+    resumes_tid = agent_ctx.table_ids["resumes"]
+    rid = agent_ctx.bitable.create_record(
+        resumes_tid,
+        {
+            "resume_id": "R3",
+            "job_id": "J1",
+            "raw_text": "一般简历",
+            "status": ResumeStatus.NEW.value,
+        },
+    )
+    s = ScreenerAgent(agent_ctx)
+    assert s.tick() == 1
+    rec = agent_ctx.bitable.get_record(resumes_tid, rid)
+    assert rec.fields["decision"] == ResumeDecision.REJECT.value
+    assert rec.fields["pipeline_stage"] == PipelineStage.TALENT_POOL.value

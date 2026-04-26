@@ -1,0 +1,25 @@
+姓名：陈悦
+手机：13600136004
+学校邮箱：chenyue@university.edu.cn
+
+教育经历
+2020–2024  某双非院校  计算机科学与技术  本科
+主修：数据结构、操作系统、数据库、网络；毕业设计：基于 FastAPI 的校园二手交易 API。
+
+实习与项目
+2023.07–2023.12  某创业公司实习  后端（Python）
+- 在导师带领下参与 RESTful 模块开发，使用 Flask/SQLite 起步，后接入公司统一 FastAPI 模板。
+- 编写 CRUD、分页、简单鉴权；学习用 pytest 写用例，参与 code review。
+
+个人项目（GitHub 可访）
+- 个人博客 API：FastAPI + PostgreSQL，JWT 登录，评论与标签。
+- 爬虫练手：requests + 解析，遵守 robots，仅学习用途。
+
+技能
+Python、FastAPI/Flask 基础、MySQL/PostgreSQL 基础、Git、Linux 常用命令
+了解 Redis、Docker；正在系统学习 DRF 与《Fluent Python》
+
+自我评价
+应届生，有实习与课设项目经验，学习意愿强，希望从事 Python 后端方向，能加班学习与成长。
+
+【说明】本人实际编码经验约 1 年以内，以初级岗位为主，若与贵司 P5 要求不完全匹配，亦可考虑实习或培养岗位。

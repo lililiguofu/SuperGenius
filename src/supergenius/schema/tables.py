@@ -52,8 +52,10 @@ class PipelineStage(str, Enum):
     HM_ARBITRATION = "hm_arbitration"
     OFFER_DRAFTING = "offer_drafting"
     OFFER_SENT = "offer_sent"
+    OFFER_NEGOTIATION = "offer_negotiation"  # 候选人在谈薪/比价，等招聘方更新 Offer
     CLOSED = "closed"
     HOLD_REVIEW = "hold_review"
+    TALENT_POOL = "talent_pool"  # 初筛淘汰等，可被动岗位再次匹配（反向激活）
 
 
 class InterviewRole(str, Enum):
@@ -87,6 +89,7 @@ class ReportKind(str, Enum):
     WEEKLY = "weekly"
     JD_HEALTH = "jd_health"
     FUNNEL = "funnel"
+    FAIRNESS = "fairness"
 
 
 class EventAction(str, Enum):
@@ -108,7 +111,9 @@ AGENT_POST_INTERVIEW = "post_interview"
 AGENT_DEBATE = "debate"
 AGENT_HM_ARB = "hiring_manager_arbiter"
 AGENT_OFFER = "offer_manager"
+AGENT_OFFER_COUNTER = "offer_negotiation"
 AGENT_CANDIDATE = "candidate"
+AGENT_POOL_REACT = "pool_reactivator"
 AGENT_ANALYST = "analyst"
 
 
@@ -176,6 +181,10 @@ RESUMES_TABLE = TableSpec(
         FieldDef("hm_decision", FieldType.TEXT),
         FieldDef("hm_reason", FieldType.TEXT),
         FieldDef("analyst_note", FieldType.TEXT),
+        # 模拟候选人画像：steady | aggressive | shopping | passive
+        FieldDef("personality", FieldType.TEXT),
+        # male / female / 空（空则仲裁时由 LLM 从 raw_text 推断）
+        FieldDef("gender", FieldType.TEXT),
     ],
 )
 

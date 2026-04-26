@@ -19,6 +19,8 @@ from supergenius.agents.base import utc_now_iso  # noqa: E402
 from supergenius.runtime import boot  # noqa: E402
 from supergenius.schema.tables import ResumeStatus  # noqa: E402
 
+_PERSONAS = ("steady", "aggressive", "shopping", "passive")
+
 FIXTURE_DIR = ROOT / "fixtures" / "resumes"
 BRIEF = ROOT / "fixtures" / "job_brief.json"
 
@@ -36,9 +38,10 @@ def main() -> None:
         return
 
     records = []
-    for f in files:
+    for i, f in enumerate(files):
         raw = f.read_text(encoding="utf-8")
         name = _extract_name(raw) or f.stem
+        persona = _PERSONAS[i % len(_PERSONAS)]
         records.append(
             {
                 "resume_id": f"R-{uuid.uuid4().hex[:8]}",
@@ -58,6 +61,8 @@ def main() -> None:
                 "hm_decision": "",
                 "hm_reason": "",
                 "analyst_note": "",
+                "personality": persona,
+                "gender": "",
             }
         )
 

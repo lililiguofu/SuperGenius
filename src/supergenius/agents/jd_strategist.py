@@ -8,6 +8,7 @@ from typing import Any
 from loguru import logger
 
 from supergenius.agents.base import AgentBase, ClaimedRecord
+from supergenius.feishu.field_value import feishu_text_to_str
 from supergenius.llm.client import render_prompt
 from supergenius.schema.tables import JobStatus
 
@@ -33,8 +34,13 @@ class JDStrategistAgent(AgentBase):
             for k in ("title", "level", "headcount", "budget_min", "budget_max", "urgency", "jd_brief")
         }
         jd_brief_json = json.dumps(brief_fields, ensure_ascii=False, indent=2)
+        jd_sug = feishu_text_to_str(rec.fields.get("jd_suggestion")) or "（暂无）"
 
-        prompt = render_prompt("jd_strategist", job_brief=jd_brief_json)
+        prompt = render_prompt(
+            "jd_strategist",
+            job_brief=jd_brief_json,
+            jd_suggestion=jd_sug,
+        )
         try:
             jd_text = self.ctx.llm.chat(
                 system="You are the JD Strategist agent.",

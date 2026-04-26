@@ -52,6 +52,10 @@ def generate_jd() -> None:
     _run_script("scripts/generate_jd.py")
 
 
+def feishu_bot() -> None:
+    _run_script("scripts/feishu_bot.py")
+
+
 if __name__ == "__main__":
-    print("Use: sg-run | sg-bootstrap | sg-seed | sg-emit | sg-jd", file=sys.stderr)
+    print("Use: sg-run | sg-bootstrap | sg-seed | sg-emit | sg-jd | sg-bot", file=sys.stderr)
     sys.exit(1)

@@ -12,8 +12,13 @@ from supergenius.agents.interviewers import (
     TechInterviewerAgent,
 )
 from supergenius.agents.jd_strategist import JDStrategistAgent
-from supergenius.agents.offer_and_candidate import CandidateSimulatorAgent, OfferManagerAgent
+from supergenius.agents.offer_and_candidate import (
+    CandidateSimulatorAgent,
+    OfferCounterAgent,
+    OfferManagerAgent,
+)
 from supergenius.agents.post_interview import PostInterviewAgent
+from supergenius.agents.reactivation import PoolReactivatorAgent
 from supergenius.agents.screener import ScreenerAgent
 
 __all__ = [
@@ -30,6 +35,8 @@ __all__ = [
     "InterviewFanoutAgent",
     "JDStrategistAgent",
     "OfferManagerAgent",
+    "OfferCounterAgent",
+    "PoolReactivatorAgent",
     "PostInterviewAgent",
     "ScreenerAgent",
     "TechInterviewerAgent",

@@ -196,7 +196,7 @@ class ScreenerAgent(AgentBase):
         elif decision is ResumeDecision.HOLD:
             pstage = PipelineStage.HOLD_REVIEW.value
         else:
-            pstage = PipelineStage.CLOSED.value
+            pstage = PipelineStage.TALENT_POOL.value
         return {
             "score": score,
             "decision": decision.value,
@@ -213,7 +213,7 @@ class ScreenerAgent(AgentBase):
         elif decision_str == "hold":
             pstage = PipelineStage.HOLD_REVIEW.value
         else:
-            pstage = PipelineStage.CLOSED.value
+            pstage = PipelineStage.TALENT_POOL.value
         return {
             "score": int(result.get("score") or 0),
             "decision": decision_str,

@@ -67,6 +67,7 @@ class SchedulerConfig:
     screener_var_threshold: float
     interview_spread_threshold: float
     debate_max_rounds: int
+    reactivation_max_per_tick: int
 
 
 @dataclass(frozen=True)
@@ -75,6 +76,14 @@ class Settings:
     llm: LLMConfig
     scheduler: SchedulerConfig
     log_level: str
+    # 非必填：若设则 Analyst 在生成周报后尝试 POST 摘要到飞书群机器人等
+    report_webhook_url: str
+    # 经理仲裁是否做「仅性别反事实」双次评判；默认开，设 0 可关闭
+    fairness_counterfactual_enabled: bool
+    # 飞书结果监听器：每阶段变化是否推一条群消息；终态再发详单
+    bot_notify_pipeline_steps: bool
+    # 上项轮询间隔（秒），越短越「实时」、请求略多
+    feishu_bot_watcher_interval: float
 
 
 def load_settings() -> Settings:
@@ -99,8 +108,19 @@ def load_settings() -> Settings:
             screener_var_threshold=float(_opt("SCREENER_CONSISTENCY_VAR_THRESHOLD", "100")),
             interview_spread_threshold=float(_opt("INTERVIEW_SPREAD_THRESHOLD", "3")),
             debate_max_rounds=int(_opt("DEBATE_MAX_ROUNDS", "3")),
+            reactivation_max_per_tick=int(_opt("REACTIVATION_MAX_PER_TICK", "2")),
         ),
         log_level=_opt("LOG_LEVEL", "INFO"),
+        report_webhook_url=(_opt("FEISHU_REPORT_WEBHOOK", "") or "").strip(),
+        fairness_counterfactual_enabled=(_opt("FAIRNESS_COUNTERFACTUAL_ENABLED", "1") or "")
+        .strip()
+        .lower()
+        in ("1", "true", "yes", "on"),
+        bot_notify_pipeline_steps=(_opt("FEISHU_BOT_NOTIFY_STEPS", "1") or "1")
+        .strip()
+        .lower()
+        in ("1", "true", "yes", "on"),
+        feishu_bot_watcher_interval=float(_opt("FEISHU_BOT_POLL_SECONDS", "8")),
     )
 
 
