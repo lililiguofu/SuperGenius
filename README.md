@@ -33,22 +33,6 @@ SuperGenius把招聘里每个岗位上做事的人，抽象成一个个数字员
 | 候选人Candidate | 外部 | 投递、响应、谈薪、决策 |
 | 招聘分析师Analyst | 运营 | 漏斗分析、校准、周报 |
 
-**一个 Agent 能干多件事（能力不缩）**  
-与早期「多节点、多类名」版本相比，**表驱动逻辑、飞书写回、子模块代码路径都还在**；只是对外只保留 **8 个业务类**，每个类在一次 `tick()` 里**按序串起**原有多步，等效于过去整条 LangGraph 线序。`owner_agent` 仍用各子能力里的真实名字（如 `interview_fanout`），方便在多维表格里排障。
-
-| 对外 1 个类 | 本类 `tick` 内包含的原子能力（与旧版一致，仅收纳） |
-|---|---|
-| `JDStrategistAgent` | `jd_strategist` 写/改 JD → `hiring_manager` **仅**「批 JD、转 open/打回」 |
-| `ScreenerAgent` | 初筛打分与一致性自检 → `pool_reactivator` 人才池反向激活 |
-| `TechInterviewerAgent` | `interview_fanout` 拆三面 bundle → 技术面打分 |
-| `BusinessInterviewerAgent` | 业务面打分（独立） |
-| `CultureInterviewerAgent` | 文化面打分 → `post_interview` 三面会诊分流 → `debate` 多轮辩论 |
-| `HiringManagerAgent` | `hiring_manager_arbiter` 经理仲裁（含公平性等）→ `offer_manager` 起草/发 Offer → `offer_negotiation` 招聘方还价 |
-| `CandidateAgent` | 候选人侧对 Offer 的接受/谈薪/拒等模拟（原 candidate） |
-| `AnalystAgent` | 漏斗、周报、诊断（不变） |
-
-**调度与包导出**：`build_graph` 的 **8 个顺序节点** 即上表 8 类。子实现可仍在独立 `.py`（如 `hiring_manager_arbiter.py`），**不**在 `supergenius.agents` 的 `__all__` 里再导出，避免和「8 个数字员工」概念混淆；需要单测/调试子模块时可直接 `import` 对应文件。
-
 ---
 
 ## 按招聘流程介绍
