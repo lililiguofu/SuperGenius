@@ -2,8 +2,7 @@
 
 from __future__ import annotations
 
-from supergenius.agents.hiring_manager import HiringManagerAgent
-from supergenius.agents.jd_strategist import JDStrategistAgent
+from supergenius.agents.jd_strategist import _HiringManagerJdApproval, _JdStrategistCore
 from supergenius.schema.tables import JobStatus
 from tests.conftest import StubLLM
 
@@ -23,7 +22,7 @@ def test_jd_strategist_drafts_and_flags_for_approval(agent_ctx):
             "owner_agent": "",
         },
     )
-    jd = JDStrategistAgent(agent_ctx)
+    jd = _JdStrategistCore(agent_ctx)
     assert jd.tick() == 1
 
     rec = agent_ctx.bitable.get_record(jobs_tid, rid)
@@ -46,7 +45,7 @@ def test_hiring_manager_approves(agent_ctx):
             "owner_agent": "",
         },
     )
-    hm = HiringManagerAgent(agent_ctx)
+    hm = _HiringManagerJdApproval(agent_ctx)
     assert hm.tick() == 1
 
     rec = agent_ctx.bitable.get_record(jobs_tid, rid)
@@ -69,7 +68,7 @@ def test_hiring_manager_requests_revision_goes_back_to_draft(agent_ctx):
             "owner_agent": "",
         },
     )
-    hm = HiringManagerAgent(agent_ctx)
+    hm = _HiringManagerJdApproval(agent_ctx)
     hm.tick()
 
     rec = agent_ctx.bitable.get_record(jobs_tid, rid)
@@ -89,7 +88,7 @@ def test_hiring_manager_handles_empty_jd_text(agent_ctx):
             "owner_agent": "",
         },
     )
-    hm = HiringManagerAgent(agent_ctx)
+    hm = _HiringManagerJdApproval(agent_ctx)
     hm.tick()
 
     rec = agent_ctx.bitable.get_record(jobs_tid, rid)

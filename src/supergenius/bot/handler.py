@@ -442,7 +442,8 @@ class BotHandler:
             self._client,
             chat_id,
             f"「{file_name}」已写入 `resumes`：「{name}」  resume_id=`{resume_id}`  岗位={job_id}\n"
-            f"已登记进度追踪；请保持 `run_mvp` 运行（FEISHU_BOT_NOTIFY_STEPS 控制阶段推送）。",
+            f"已登记进度追踪；请保持 `run_mvp` 运行。本批全部结束后会发**一份总报告**"
+            f"（`FEISHU_BOT_REPORT_DIR` 可写本地 Markdown；`FEISHU_BOT_NOTIFY_STEPS=0` 可关阶段刷屏）。",
         )
 
     # ---------- create job ----------

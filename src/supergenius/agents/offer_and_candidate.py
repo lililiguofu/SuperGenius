@@ -233,7 +233,7 @@ class OfferCounterAgent(AgentBase):
         }
 
 
-class CandidateSimulatorAgent(AgentBase):
+class CandidateAgent(AgentBase):
     name = AGENT_CANDIDATE
     watch_table = "offers"
     in_progress_status = None
@@ -331,3 +331,6 @@ class CandidateSimulatorAgent(AgentBase):
             "owner_agent": "",
             "updated_at": utc_now_iso(),
         }
+
+
+CandidateSimulatorAgent = CandidateAgent

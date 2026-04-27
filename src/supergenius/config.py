@@ -51,6 +51,8 @@ class FeishuConfig:
     app_id: str
     app_secret: str
     bitable_app_token: str
+    # 生成「打开多维表格某行」链接用，国内默认 www.feishu.cn；飞书国际版可改为 https://www.larksuite.com
+    link_base: str
 
 
 @dataclass(frozen=True)
@@ -82,6 +84,10 @@ class Settings:
     fairness_counterfactual_enabled: bool
     # 飞书结果监听器：每阶段变化是否推一条群消息；终态再发详单
     bot_notify_pipeline_steps: bool
+    # 有简历到终态时是否立即各推一条；默认关，攒到本批全部结束后一份报告
+    bot_notify_each_terminal: bool
+    # 本批终态报告写入的目录，相对项目根，空则只发飞书不写文件
+    bot_batch_report_dir: str
     # 上项轮询间隔（秒），越短越「实时」、请求略多
     feishu_bot_watcher_interval: float
 
@@ -92,6 +98,9 @@ def load_settings() -> Settings:
             app_id=_require("FEISHU_APP_ID"),
             app_secret=_require("FEISHU_APP_SECRET"),
             bitable_app_token=_require("BITABLE_APP_TOKEN"),
+            link_base=(_opt("FEISHU_LINK_BASE", "https://www.feishu.cn") or "https://www.feishu.cn")
+            .strip()
+            .rstrip("/"),
         ),
         llm=LLMConfig(
             # 默认对接火山引擎方舟（OpenAI 兼容 /v1）；与竞赛「国内模型」一致，勿默认境外地址
@@ -120,6 +129,11 @@ def load_settings() -> Settings:
         .strip()
         .lower()
         in ("1", "true", "yes", "on"),
+        bot_notify_each_terminal=(_opt("FEISHU_BOT_NOTIFY_EACH_TERMINAL", "0") or "0")
+        .strip()
+        .lower()
+        in ("1", "true", "yes", "on"),
+        bot_batch_report_dir=(_opt("FEISHU_BOT_REPORT_DIR", "reports") or "reports").strip(),
         feishu_bot_watcher_interval=float(_opt("FEISHU_BOT_POLL_SECONDS", "8")),
     )
 

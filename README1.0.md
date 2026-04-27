@@ -56,9 +56,9 @@ SuperGenius/
 
 ## 四、编排（每个 tick 的固定顺序）
 
-`build_graph` 中顺序为：
+`build_graph` 为 **8 个图节点**（与根目录 `README.md` 的 8 个公开 Agent 类一致，见 `supergenius.agents.__all__`）：
 
-`jd_strategist` → `hiring_manager`（JD 审批）→ `screener` → `pool_reactivator`（人才池）→ `interview_fanout` → 三位面试官 → `post_interview` → `debate`（可收敛提前交经理）→ `hiring_manager_arbiter` → `offer_manager` → `candidate` → `offer_negotiation`（招聘方对谈薪/比价还价）→ `analyst`。
+`jd_strategist`（文件内子阶段：写稿 + 经理批 JD）→ `screener`（初筛 + 人才池）→ 三位面试官（技术面 `tick` 内 `interview_fanout`；文化面 `tick` 内 `post_interview` 与 `debate`）→ `hiring_manager`（经理仲裁 + `offer` + 还价）→ `candidate` → `analyst`。仲裁/Offer/面试子模块仍在独立 `.py` 中实现，**不**在包入口导出。
 
 分支由**表内状态**表达，LangGraph 仍为**线序无条件边**。
 

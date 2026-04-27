@@ -119,6 +119,14 @@ class ScreenerAgent(AgentBase):
         # decision 直接按字符串透传；ResumeDecision 枚举在 _patch 路径使用
         return self._patch_raw(best["decision"], best)
 
+    def tick(self) -> int:
+        """初筛 + 人才池反向激活（README：简历筛选官）。"""
+        from supergenius.agents.reactivation import PoolReactivatorAgent
+
+        n = super().tick()
+        n += PoolReactivatorAgent(self.ctx).tick()
+        return n
+
     # ---------- helpers ----------
 
     def _find_job_by_job_id(self, job_id: str) -> Record | None:

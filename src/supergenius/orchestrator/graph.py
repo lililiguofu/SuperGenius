@@ -1,4 +1,4 @@
-"""LangGraph StateGraph：一次 tick 中，按顺序让各 Agent 各扫各的表。"""
+"""LangGraph StateGraph：一次 tick 中顺序执行 README 的 8 个 Agent。"""
 
 from __future__ import annotations
 
@@ -11,17 +11,10 @@ from supergenius.agents import (
     AgentContext,
     AnalystAgent,
     BusinessInterviewerAgent,
-    CandidateSimulatorAgent,
+    CandidateAgent,
     CultureInterviewerAgent,
-    DebateAgent,
     HiringManagerAgent,
-    HiringManagerArbiterAgent,
-    InterviewFanoutAgent,
     JDStrategistAgent,
-    OfferCounterAgent,
-    OfferManagerAgent,
-    PoolReactivatorAgent,
-    PostInterviewAgent,
     ScreenerAgent,
     TechInterviewerAgent,
 )
@@ -48,19 +41,12 @@ def build_graph(ctx: AgentContext) -> Any:
     """返回 compiled graph；每次 invoke 就是一次 tick。"""
     agents: list[AgentBase] = [
         JDStrategistAgent(ctx),
-        HiringManagerAgent(ctx),
         ScreenerAgent(ctx),
-        PoolReactivatorAgent(ctx),
-        InterviewFanoutAgent(ctx),
         TechInterviewerAgent(ctx),
         BusinessInterviewerAgent(ctx),
         CultureInterviewerAgent(ctx),
-        PostInterviewAgent(ctx),
-        DebateAgent(ctx),
-        HiringManagerArbiterAgent(ctx),
-        OfferManagerAgent(ctx),
-        CandidateSimulatorAgent(ctx),
-        OfferCounterAgent(ctx),
+        HiringManagerAgent(ctx),
+        CandidateAgent(ctx),
         AnalystAgent(ctx),
     ]
     g = StateGraph(TickState)

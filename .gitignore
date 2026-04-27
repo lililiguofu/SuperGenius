@@ -28,6 +28,8 @@ htmlcov/
 ._run_out.txt
 _last_run.txt
 *.log
+# 飞书监听生成的本批 Markdown 报告（见 FEISHU_BOT_REPORT_DIR）
+reports/
 
 # IDE
 .vscode/

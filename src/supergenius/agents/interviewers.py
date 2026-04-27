@@ -8,6 +8,9 @@ from typing import Any
 from loguru import logger
 
 from supergenius.agents.base import AgentBase, ClaimedRecord, utc_now_iso
+from supergenius.agents.debate_agent import DebateAgent
+from supergenius.agents.interview_fanout import InterviewFanoutAgent
+from supergenius.agents.post_interview import PostInterviewAgent
 from supergenius.feishu.bitable import Record
 from supergenius.feishu.field_value import feishu_text_to_str
 from supergenius.llm.client import render_prompt
@@ -142,6 +145,11 @@ class TechInterviewerAgent(_InterviewerBase):
     role = InterviewRole.TECH
     prompt_name = "tech_interviewer"
 
+    def tick(self) -> int:
+        n = InterviewFanoutAgent(self.ctx).tick()
+        n += super().tick()
+        return n
+
 
 class BusinessInterviewerAgent(_InterviewerBase):
     name = AGENT_BUSINESS
@@ -153,3 +161,9 @@ class CultureInterviewerAgent(_InterviewerBase):
     name = AGENT_CULTURE
     role = InterviewRole.CULTURE
     prompt_name = "culture_interviewer"
+
+    def tick(self) -> int:
+        n = super().tick()
+        n += PostInterviewAgent(self.ctx).tick()
+        n += DebateAgent(self.ctx).tick()
+        return n

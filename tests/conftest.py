@@ -129,6 +129,11 @@ def agent_ctx(mem_bitable) -> AgentContext:
     events_tid = mem_bitable.add_table("events")
 
     cfg = MagicMock()
+    cfg.feishu = MagicMock()
+    cfg.feishu.bitable_app_token = "bascnXXXXXXXX"
+    cfg.feishu.app_id = "cli_test"
+    cfg.feishu.app_secret = "secret"
+    cfg.feishu.link_base = "https://www.feishu.cn"
     cfg.scheduler.screener_var_threshold = 100.0
     cfg.scheduler.interview_spread_threshold = 3.0
     cfg.scheduler.debate_max_rounds = 3
@@ -136,6 +141,8 @@ def agent_ctx(mem_bitable) -> AgentContext:
     cfg.report_webhook_url = ""
     cfg.fairness_counterfactual_enabled = True
     cfg.bot_notify_pipeline_steps = True
+    cfg.bot_notify_each_terminal = False
+    cfg.bot_batch_report_dir = ""
     cfg.feishu_bot_watcher_interval = 8.0
     cfg.llm.temperature = 0.3
 
