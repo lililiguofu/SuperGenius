@@ -32,25 +32,28 @@ from supergenius.schema.tables import JobStatus, ResumeStatus
 
 _HELP = """\
 SuperGenius 招聘助手使用说明
+────────────────────────
 
 【开岗位】
 直接告诉我要招什么人，例如：
-  「招一名 Java 后端工程师，P5，预算 2-3 万/月，比较紧急」
-系统自动生成岗位草稿 → JD 策划官起草 JD → 经理审批后岗位开放。
+  招一名 Java 后端工程师，P5，预算 2-3 万/月，比较紧急
+系统会自动生成岗位草稿 → JD 策划官起草 JD → 经理审批后岗位开放。
 
 【投递简历】
-把简历文件（.txt / .pdf / .docx）直接发到这里。
-可一次多份；先合并成一条「已收到」，再依次处理。
-只会投到本对话**当前绑定**的 `open` 岗位（最后一次在此对话「开岗」或「绑定岗位 J-…」），
-不会自动混到别的在招岗。要换目标发：「绑定岗位 J-你的岗位ID」。
-岗位开放后，简历进入初筛 → 面试 → 辩论 → 仲裁 → Offer，有结果会通知。
+把简历文件（.txt / .pdf / .docx）直接发到这里，可以一次发多份。
+简历只投到本对话当前绑定的招募岗位（最近一次在此对话「开岗」或「绑定岗位 J-…」）。
+岗位开放后，简历进入初筛 → 面试 → 辩论 → 仲裁 → Offer，完成后会发总报告。
+
+【换绑岗位】
+发：绑定岗位 J-你的岗位ID
+可切换投递目标，不会与历史岗位混投。
 
 【查看进度】
-发送「查进度」或「最新状态」可看全局汇总。
-详细记录请在飞书多维表格（Bitable）的各张表里查看。
+发「查进度」或「最新状态」可看当前全局汇总。
+详细字段可在飞书多维表格各张表里查看。
 
-【公平性说明】
-仲裁环节有性别反事实双评；若结论不一致会自动转人工审核并通知你。\
+【公平性】
+仲裁环节有性别反事实双评；结论不一致时自动转人工审核并通知你。\
 """
 
 _QUERY_KEYWORDS = ("进度", "状态", "结果", "筛到哪", "最新", "overview", "status")
@@ -250,10 +253,10 @@ class BotHandler:
             send_text(
                 self._client,
                 chat_id,
-                "没太明白你的意思，可以：\n"
-                "· 直接描述岗位（如「招一名 XX 工程师…」）\n"
-                "· 发简历文件（.txt / .pdf / .docx）\n"
-                "· 发「帮助」查看完整说明",
+                "没太明白，可以：\n"
+                "  · 描述岗位，如「招一名 XX 工程师，P5，预算 2-3 万」\n"
+                "  · 发简历文件（.txt / .pdf / .docx）\n"
+                "  · 发「帮助」查看说明",
             )
 
     # ---------- file ----------
@@ -343,7 +346,7 @@ class BotHandler:
                 self._client,
                 chat_id,
                 f"「{file_name}」拉取/解析失败：\n{reason}\n"
-                f"可隔几秒**单独重发**该份。",
+                f"可隔几秒单独重发该份。",
             )
             return
 
@@ -354,20 +357,20 @@ class BotHandler:
                 send_text(
                     self._client,
                     chat_id,
-                    f"「{file_name}」{nchars} 字，仍无 `open` 投递目标，未入库（说明见上一条）。",
+                    f"「{file_name}」({nchars} 字) 仍无 open 岗位，未入库（说明见上一条）。",
                 )
                 return
             send_text(
                 self._client,
                 chat_id,
-                f"「{file_name}」解析成功（{nchars} 字），检查「开放中 open」岗位…",
+                f"「{file_name}」解析成功（{nchars} 字），检查开放中岗位…",
             )
             lines = [
-                "本对话**还没有「已绑定 + open」的投递目标**，简历先不入库（避免和别的在招岗混投）。",
+                "本对话还没有绑定「开放中」岗位，简历暂不入库，避免混投别的在招岗。",
                 "",
-                "做法：",
-                "· 在这里**开新岗**并等 `jobs` 里变为 `open`；或",
-                "· 表格里已开好岗、状态已是 `open` 时，发一句：**绑定岗位 J-你的ID** 指定投哪一岗。",
+                "解决方式：",
+                "  · 在这里开新岗，等岗位状态变为 open；或",
+                "  · 发「绑定岗位 J-你的ID」指定已 open 的岗位。",
             ]
             with self._lock:
                 jlast = self._chat_job.get(chat_id)
@@ -383,11 +386,11 @@ class BotHandler:
                     st = feishu_text_to_str(rows[0].fields.get("status")) or "?"
                     lines += [
                         "",
-                        f"当前绑定/最近开岗为 `{jlast}`，`status`={st!r}；"
-                        f"为 `open` 后无需改绑，直接再发简历即可。",
+                        f"当前绑定岗位：{jlast}，状态：{st}",
+                        "状态变为 open 后直接再发简历即可，无需重新绑定。",
                     ]
             else:
-                lines += ["", "新对话没有默认岗位；若有多条在招，务必先「绑定岗位 J-…」。"]
+                lines += ["", "新对话没有默认岗位；若有多条在招，请先「绑定岗位 J-…」。"]
             send_text(
                 self._client,
                 chat_id,
@@ -441,9 +444,11 @@ class BotHandler:
         send_text(
             self._client,
             chat_id,
-            f"「{file_name}」已写入 `resumes`：「{name}」  resume_id=`{resume_id}`  岗位={job_id}\n"
-            f"已登记进度追踪；请保持 `run_mvp` 运行。本批全部结束后会发**一份总报告**"
-            f"（`FEISHU_BOT_REPORT_DIR` 可写本地 Markdown；`FEISHU_BOT_NOTIFY_STEPS=0` 可关阶段刷屏）。",
+            f"「{file_name}」已入库\n"
+            f"  候选人：{name}\n"
+            f"  简历ID：{resume_id}\n"
+            f"  岗位：{job_id}\n"
+            f"已登记进度追踪，本批全部完成后会发一份总报告。",
         )
 
     # ---------- create job ----------
@@ -481,19 +486,21 @@ class BotHandler:
         with self._lock:
             self._chat_job[chat_id] = job_id
 
-        budget_str = f"{b_min}-{b_max}" if (b_min or b_max) else "待定"
+        budget_str = f"{b_min}-{b_max} 元/月" if (b_min or b_max) else "待定"
         send_text(
             self._client,
             chat_id,
-            f"岗位已创建！\n\n"
-            f"职位：{title}（{level}）\n"
-            f"人数：{headcount}\n"
-            f"预算：{budget_str}\n"
-            f"紧急程度：{urgency}\n"
-            f"岗位 ID：{job_id}\n\n"
-            f"本对话的投递目标已指向上述 ID；**你之后再在此开新岗，以最后一次为准**，不会和旧岗混投。\n"
-            f"若要从表格里改绑别的 `open` 岗，可发：绑定岗位 J-某ID\n"
-            f"JD 策划官已起草，待岗位在表里变为 `open` 后即可发简历。",
+            f"岗位已创建\n"
+            f"────────────────────────\n"
+            f"  职位：{title}（{level}）\n"
+            f"  人数：{headcount}\n"
+            f"  预算：{budget_str}\n"
+            f"  紧急：{urgency}\n"
+            f"  岗位ID：{job_id}\n"
+            f"────────────────────────\n"
+            f"本对话已绑定此岗位，直接发简历文件即可投递。\n"
+            f"JD 策划官起草中，岗位变为 open 后流程自动推进。\n"
+            f"要改绑其他岗位，发：绑定岗位 J-某ID",
         )
 
     # ---------- query ----------
@@ -529,7 +536,7 @@ class BotHandler:
             send_text(
                 self._client,
                 chat_id,
-                f"未找到 job_id={job_id} 的岗位。请检查多维表格 jobs 表或开岗时复制的 ID。",
+                f"未找到岗位 {job_id}，请核对多维表格 jobs 表或开岗时的 ID。",
             )
             return
         st = feishu_text_to_str(rows[0].fields.get("status"))
@@ -537,8 +544,8 @@ class BotHandler:
             send_text(
                 self._client,
                 chat_id,
-                f"岗位 `{job_id}` 当前不是「开放中 open」（现为 {st!r}），无法作为投递目标。\n"
-                f"请先在表里把 `status` 改为 `open`，或等流程推进。",
+                f"岗位 {job_id} 当前状态为「{st}」，不是 open，无法作为投递目标。\n"
+                f"请等流程推进，或在表里手动将 status 改为 open。",
             )
             return
         with self._lock:
@@ -546,8 +553,8 @@ class BotHandler:
         send_text(
             self._client,
             chat_id,
-            f"已绑定本对话的投递目标：`{job_id}`\n"
-            f"之后发的简历**只**会记在这一岗下，不会投到历史其它岗。",
+            f"已绑定岗位 {job_id}\n"
+            f"之后发的简历只会记在这一岗下，不会混投到其他岗。",
         )
         logger.info(f"[bot] 会话 {chat_id!r} 绑定岗位 {job_id}")
 
